@@ -1,0 +1,242 @@
+---
+title: "The relationship between the Great Barrier Reef ecology and tourism"
+author: "Lihai Geng"
+date: "University of Sydney | May 2020"
+output:
+  html_document:
+    fig_caption: yes
+    number_sections: yes
+    self_contained: yes
+    theme: flatly
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: hide
+---
+
+<br>
+
+# Recommendaton
+
+<br>
+
+*The main clients of this report are those who are protecting the Great Barrier Reef and those who are concerned about whether the Great Barrier Reef is affected by tourism. This report proposes to continue to maintain the previous methods of protecting the Great Barrier Reef.  Because chlorophyll-a has significantly decreased from 1992 to 2009 in most of the places, also Secchi depth is staying in good condition.*
+
+<br>
+
+# Evidence
+
+## Domain knowledge
+
+<br>
+
+*"The analyses showed that algal cover and the richness of hard corals and octocorals were strongly related to chlorophyll and water clarity. Guideline values of maximum mean annual concentrations of chlorophyll of 0.45 g/L and minimum mean annual Secchi depth of 10 m. Chlorophyll guidelines need to be seasonally adjusted to values 40% higher in summer, i.e. 0.63 μg/L, and winter guidelines should be 30% lower, i.e., 0.32 μg/L."[1] *
+
+<br>
+
+## Overview of Chlorophy-A in all Areas of Great Barrier Reef
+
+<br>
+```{r eval=T, message=FALSE, warning=FALSE}
+
+library(dplyr)
+library(plotly)
+library(lubridate)
+
+#Load data first
+
+gbr = read.csv("gbr.csv")
+
+
+#Get month and years from source data
+
+gbr = gbr %>% 
+  mutate(newdate = as.Date(as.character(gbr$SAMPLE_TIME),format = '%d/%m/%y')) %>% 
+  mutate(month = month(newdate))
+
+gbr = gbr %>% 
+  mutate(newdate = as.Date(as.character(gbr$SAMPLE_TIME),format = '%d/%m/%y')) %>% 
+  mutate(year = year(newdate))
+
+
+#Creat a scatter plot about CHL_A, Month and Year from all the region
+sp1=plot_ly(,x=~gbr$month,y=~gbr$CHL_A,color=~factor(gbr$year),colors="Spectral",type="scatter")%>% layout(yaxis=list(title="<b>Chlorophy-A<b>"),xaxis=list(title="<b>Month<b>"),legend=list(title=list(text='<b> Years </b>')))
+
+sp1
+```
+
+<br>
+
+*As we can see that the highest value of Chlorophy-A was in October 2005, and the highest Chlorophy-A value was 62.172 μg/L . However, due to the summer, it still does not exceed the recommended value. If we remove 2005, we can clearly see that the Chlorophy-A decreases with time, and all of the Chlorophy-A values are within the recommended range. And studies have shown that Hard coral species richness increases with decreasing Chlorophy-A [1], and Richness of phototrophic octocorals also increases with decreasing Chlorophy-A [1].*
+
+<br>
+
+### Does travel affect the value of Chlorophy-A?
+
+<br>
+
+```{r eval=T, message=FALSE, warning=FALSE}
+
+library(dplyr)
+library(plotly)
+library(lubridate)
+
+#Load data first
+
+gbr = read.csv("gbr.csv")
+
+
+#Creat new gbr csv based on Travel recommendation website (at refercen 2)
+
+gbr.new = gbr %>% filter(STATION_NAME %in% c("Lady Musgrave Island","North West Island","Heron Island","Outside Agincourt 4 Reef","Green Island","Low Isles1","Low Isles2","Michaelmas Cay","North of Hayman Island","Fitzroy Island Jetty"))
+
+
+#Get month and year from gbr.new.csv
+
+gbr.new = gbr.new %>% 
+  mutate(newdate = as.Date(as.character(gbr.new$SAMPLE_TIME),format = '%d/%m/%y')) %>% 
+  mutate(month = month(newdate))
+
+gbr.new = gbr.new %>% 
+  mutate(newdate = as.Date(as.character(gbr.new$SAMPLE_TIME),format = '%d/%m/%y')) %>% 
+  mutate(year = year(newdate))
+
+
+#Creat a scatter plot about CHL_A, Month and Year from travel recommend island and region
+
+spp1=plot_ly(,x=~gbr.new$month,y=~gbr.new$CHL_A,color=~factor(gbr.new$year),colors="Spectral",type="scatter")%>% layout(yaxis=list(title="<b>Chlorophy-A<b>"),xaxis=list(title="<b>Month<b>"),legend=list(title=list(text='<b> Chlorophy-A and Time </b>')))
+
+spp1
+
+```
+
+<br>
+
+*We can see that the chlorophyll in the figure is almost the same as the total area except for the chlorophyll in 2005. It seems that tourism
+almost do not affect chlorophyll value.*
+
+<br>
+
+## Overview of Secchl Depth in all Areas of Great Barrier Reef
+
+<br>
+
+```{r eval=T, message=FALSE, warning=FALSE}
+library(dplyr)
+library(plotly)
+library(lubridate)
+
+#Load data first
+
+gbr = read.csv("gbr.csv")
+
+
+#Get month and years from source data
+
+gbr = gbr %>% 
+  mutate(newdate = as.Date(as.character(gbr$SAMPLE_TIME),format = '%d/%m/%y')) %>% 
+  mutate(month = month(newdate))
+
+gbr = gbr %>% 
+  mutate(newdate = as.Date(as.character(gbr$SAMPLE_TIME),format = '%d/%m/%y')) %>% 
+  mutate(year = year(newdate))
+
+#Due to there are some NA so here will remove the NA sections
+
+sd_old_nna=gbr$SECCHI_DEPTH[which(!is.na(gbr$SECCHI_DEPTH))]
+
+month_old_nna=gbr$month[which(!is.na(gbr$SECCHI_DEPTH))]
+
+year_old_nna=gbr$year[which(!is.na(gbr$SECCHI_DEPTH))]
+
+
+#Creat a scatter plot about Secchl Depth , MOnth and Year from all region
+
+sp2=plot_ly(,x=~month_old_nna,y=~sd_old_nna,color=~factor(year_old_nna),colors="Spectral",type="scatter")%>% layout(yaxis=list(title="<b>SECCHI Depth<b>"),xaxis=list(title="<b>Month<b>"),legend=list(title=list(text='<b> Years </b>')))
+
+sp2
+
+```
+
+<br>
+
+*From 1992 to 2008, the highest value of Secchl Depth was 40 meters. It appeared in August 1993. Secchl Depth is not affected by the season。We can see that Secchl Depth is decreasing with time. Most of it decreased from 30 meters to 20 meters before 2000 and to 10 meters from 2000 to 2005, finally to 5 meters after 2006. Because the recommended depth of Secchl Depth is 10m, MC decreases sharply when Secchl Depth is less than 13 meters. At the same time, chlorophyll will decrease with the decrease of macroalgal cover, which will benefit hard coral species richness and richness of phototrophic octocorals. But when Secchl Depth is lower than 10 meters, richness of phototrophic octocorals will be extremely reduce.*
+
+<br>
+
+### Does travel affect the Secchl Depth ?
+
+<br>
+
+```{r eval=T, message=FALSE, warning=FALSE}
+
+library(dplyr)
+library(plotly)
+library(lubridate)
+
+#Load data first
+
+gbr = read.csv("gbr.csv")
+
+
+#Creat new gbr csv based on Travel recommendation website (at refercen 2)
+
+gbr.new = gbr %>% filter(STATION_NAME %in% c("Lady Musgrave Island","North West Island","Heron Island","Outside Agincourt 4 Reef","Green Island","Low Isles1","Low Isles2","Michaelmas Cay","North of Hayman Island","Fitzroy Island Jetty"))
+
+
+#Get month and year from gbr.new.csv
+
+gbr.new = gbr.new %>% 
+  mutate(newdate = as.Date(as.character(gbr.new$SAMPLE_TIME),format = '%d/%m/%y')) %>% 
+  mutate(month = month(newdate))
+
+gbr.new = gbr.new %>% 
+  mutate(newdate = as.Date(as.character(gbr.new$SAMPLE_TIME),format = '%d/%m/%y')) %>% 
+  mutate(year = year(newdate))
+
+
+#Due to there are some NA so here will remove the NA sections
+
+sd_nna=gbr.new$SECCHI_DEPTH[which(!is.na(gbr.new$SECCHI_DEPTH))]
+
+month_nna=gbr.new$month[which(!is.na(gbr.new$SECCHI_DEPTH))]
+
+year_nna=gbr.new$year[which(!is.na(gbr.new$SECCHI_DEPTH))]
+
+
+#Creat a scatter plot about Secchl Depth , MOnth and Yearr from travel recommend island and region
+
+spp2=plot_ly(,x=~month_nna,y=~sd_nna,color=~factor(year_nna),colors="Spectral",type="scatter")%>% layout(yaxis=list(title="<b>SECCHI Depth<b>"),xaxis=list(title="<b>Month<b>"),legend=list(title=list(text='<b> Years </b>')))
+
+spp2
+
+```
+
+<br>
+
+*Due to the lack of data for 2007 and 2008, the data from 2006 and before shows that the area have tourism are basically same as other areas of Great Barrier Reef. So tourism do not affect the Secchl depth before 2006*
+
+<br>
+
+# Other Evidence 
+
+<br>
+*By Dr Katharina Fabricius's "Water quality guidelines for the Great Barrier Reef"[1] mention that particulate phosphorus,suspended solids, particulate nitrogen and Secchi are have high correlation. So here are some limitations to the Secchi Depth from data to predict the Great Barrier Reef health status. Also by "How Reefs Are Made"[3] knows that we do not have coral polyps health status data, this is also the limatation to predict the Great Barrier Reef health status.*
+
+<br>
+
+# Reference
+
+<br>
+
+[1] Fabricius, D. K. (2009, January 5). Water quality guidelines for the Great Barrier Reef. Retrieved from eAtlas: 
+https://eatlas.org.au/content/water-quality-guidelines-great-barrier-reef
+
+<br>
+
+[2] Great Barrier reef. (2020). Which Reef or Island is Best for Me? Retrieved from Great Barrier Reef: https://greatbarrierreef.com.au/which-reef-is-best/
+
+<br>
+
+[3] Coral Reef Alliance. (2020). How Reefs Are Made. Retrieved from Saving the World's Coral Reefs: https://coral.org/coral-reefs-101/coral-reef-ecology/how-reefs-are-made/
+
